@@ -5,15 +5,14 @@ import (
 	"html"
 	"strings"
 
-	"github.com/jinzhu/gorm"
 	"github.com/lovrog05/task-manager-backend/utils/token"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	gorm.Model
+	UserID   uint   `gorm:"primaryKey"`
 	Username string `gorm:"size:255;not null;unique" json:"username"`
-	Password string `gorm:"size:255;not null;" json:"password"`
+	Password string `gorm:"size:255;not null;" json:"-"`
 }
 
 func GetUserByID(uid uint) (User, error) {
@@ -56,7 +55,7 @@ func LoginCheck(username string, password string) (string, error) {
 		return "", err
 	}
 
-	token, err := token.GenerateToken(u.ID)
+	token, err := token.GenerateToken(u.UserID)
 
 	if err != nil {
 		return "", err
