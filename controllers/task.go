@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lovrog05/task-manager-backend/models"
+	"github.com/lovrog05/task-manager-backend/utils/cron"
 	"github.com/lovrog05/task-manager-backend/utils/token"
 )
 
@@ -77,6 +78,7 @@ func CreateTask(c *gin.Context) {
 		OnDay:       task.OnDay,
 		Assignees:   assignees,
 		Creator:     u,
+		Last:        0,
 	}
 
 	err = models.DB.Create(&newtask).Error
@@ -84,5 +86,7 @@ func CreateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	cron.RegisterTaskCron(newtask.ID)
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": newtask})
 }
