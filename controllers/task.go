@@ -35,7 +35,6 @@ type TaskInput struct {
 }
 
 func CreateTask(c *gin.Context) {
-	fmt.Print(c.Request.Body)
 	var task TaskInput
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

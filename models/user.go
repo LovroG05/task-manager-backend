@@ -13,6 +13,7 @@ type User struct {
 	UserID   uint   `gorm:"primaryKey"`
 	Username string `gorm:"size:255;not null;unique" json:"username"`
 	Password string `gorm:"size:255;not null;" json:"-"`
+	FmcToken string `gorm:"size:255;not null;" json:"fmc_token"`
 }
 
 func GetUserByID(uid uint) (User, error) {
@@ -63,6 +64,15 @@ func LoginCheck(username string, password string) (string, error) {
 
 	return token, nil
 
+}
+
+func (u *User) UpdateFmcToken() error {
+
+	if err := DB.Model(User{}).Where("user_id = ?", u.UserID).Update("fmc_token", u.FmcToken).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *User) SaveUser() (*User, error) {

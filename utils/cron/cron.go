@@ -1,11 +1,15 @@
 package cron
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/messaging"
 	"github.com/go-co-op/gocron"
 	"github.com/lovrog05/task-manager-backend/models"
+	"google.golang.org/api/option"
 )
 
 func RegisterTaskCron(taskID uint) {
@@ -73,4 +77,34 @@ func makePushNotif(taskID uint) {
 
 func sendPushNotif(title string, user models.User) {
 	fmt.Println("Task " + title + " must be performed by " + user.Username + " right now")
+	opt := option.WithCredentialsFile("servicekey.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	message := &messaging.Message{
+		Token: user.FmcToken,
+		Notification: &messaging.Notification{
+			Title: "Task: " + title,
+			Body:  "do your task now",
+		},
+		Data: map[string]string{"title": title, "body": "do your task now"},
+	}
+
+	client, err := app.Messaging(context.Background())
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	time.Sleep(10 * time.Second) // sleep for 10 seconds
+
+	response, err := client.Send(context.Background(), message)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println(response)
+		return
+	}
 }
