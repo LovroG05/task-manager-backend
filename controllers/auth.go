@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lovrog05/task-manager-backend/models"
 	"github.com/lovrog05/task-manager-backend/utils/token"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CurrentUser(c *gin.Context) {
@@ -107,8 +108,14 @@ func Register(c *gin.Context) {
 
 	u := models.User{}
 
+	passwd, errr := bcrypt.GenerateFromPassword([]byte(models.preparePasswordInput(input.Password)), bcrypt.DefaultCost)
+	if errr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errr.Error()})
+		return
+	}
+
 	u.Username = input.Username
-	u.Password = input.Password
+	u.Password = string(passwd)
 
 	_, err := u.SaveUser()
 

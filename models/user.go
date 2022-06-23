@@ -1,6 +1,8 @@
 package models
 
 import (
+	"bytes"
+	"crypto/sha512"
 	"errors"
 	"html"
 	"strings"
@@ -35,6 +37,7 @@ func (u *User) PrepareGive() {
 }
 
 func VerifyPassword(password, hashedPassword string) error {
+	password = preparePasswordInput(password)
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
@@ -99,4 +102,13 @@ func (u *User) BeforeSave() error {
 
 	return nil
 
+}
+
+func preparePasswordInput(plainText string) (preparedPasswordInput string) {
+	// Creates a SHA512 hash, trimmed to 64 characters, so that it fits in bcrypt
+	hashedInput := sha512.Sum512_256([]byte(plainText))
+	// Bcrypt terminates at NULL bytes, so we need to trim these away
+	trimmedHash := bytes.Trim(hashedInput[:], "\x00")
+	preparedPasswordInput = string(trimmedHash)
+	return
 }
