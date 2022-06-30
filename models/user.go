@@ -37,7 +37,7 @@ func (u *User) PrepareGive() {
 }
 
 func VerifyPassword(password, hashedPassword string) error {
-	password = preparePasswordInput(password)
+	password = PreparePasswordInput(password)
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
@@ -104,11 +104,10 @@ func (u *User) BeforeSave() error {
 
 }
 
-func preparePasswordInput(plainText string) (preparedPasswordInput string) {
+func PreparePasswordInput(plainText string) string {
 	// Creates a SHA512 hash, trimmed to 64 characters, so that it fits in bcrypt
 	hashedInput := sha512.Sum512_256([]byte(plainText))
 	// Bcrypt terminates at NULL bytes, so we need to trim these away
 	trimmedHash := bytes.Trim(hashedInput[:], "\x00")
-	preparedPasswordInput = string(trimmedHash)
-	return
+	return string(trimmedHash)
 }

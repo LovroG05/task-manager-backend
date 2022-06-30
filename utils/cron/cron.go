@@ -3,6 +3,7 @@ package cron
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	firebase "firebase.google.com/go"
@@ -19,48 +20,27 @@ func RegisterTaskCron(taskID uint) {
 	}
 	scheduler := gocron.NewScheduler(time.Local)
 
-	if task.Daily {
-		scheduler.Every(1).Day().At(task.OnTime).Do(func() {
-			makePushNotif(taskID)
-		})
-	} else {
-		if task.OnDay == "MONDAY" {
-			scheduler.Every(1).Monday().At(task.OnTime).Do(func() {
-				makePushNotif(taskID)
-			})
-		} else if task.OnDay == "TUESDAY" {
-			scheduler.Every(1).Tuesday().At(task.OnTime).Do(func() {
-				makePushNotif(taskID)
-			})
-		} else if task.OnDay == "WEDNESDAY" {
-			scheduler.Every(1).Wednesday().At(task.OnTime).Do(func() {
-				makePushNotif(taskID)
-			})
-		} else if task.OnDay == "THURSDAY" {
-			scheduler.Every(1).Thursday().At(task.OnTime).Do(func() {
-				makePushNotif(taskID)
-			})
-		} else if task.OnDay == "FRIDAY" {
-			scheduler.Every(1).Friday().At(task.OnTime).Do(func() {
-				makePushNotif(taskID)
-			})
-		} else if task.OnDay == "SATURDAY" {
-			scheduler.Every(1).Saturday().At(task.OnTime).Do(func() {
-				makePushNotif(taskID)
-			})
-		} else if task.OnDay == "SUNDAY" {
-			scheduler.Every(1).Sunday().At(task.OnTime).Do(func() {
-				makePushNotif(taskID)
-			})
+	for _, day := range task.Days {
+		switch strings.ToLower(day) {
+		case "monday":
+			scheduler.Every(1).Monday().At(task.Time).Do(makePushNotif, task)
+		case "tuesday":
+			scheduler.Every(1).Tuesday().At(task.Time).Do(makePushNotif, task)
+		case "wednesday":
+			scheduler.Every(1).Wednesday().At(task.Time).Do(makePushNotif, task)
+		case "thursday":
+			scheduler.Every(1).Thursday().At(task.Time).Do(makePushNotif, task)
+		case "friday":
+			scheduler.Every(1).Friday().At(task.Time).Do(makePushNotif, task)
+		case "saturday":
+			scheduler.Every(1).Saturday().At(task.Time).Do(makePushNotif, task)
+		case "sunday":
+			scheduler.Every(1).Sunday().At(task.Time).Do(makePushNotif, task)
 		}
 	}
 }
 
-func makePushNotif(taskID uint) {
-	var task models.Task
-	if err := models.DB.Where("id = ?", taskID).Preload("Creator").Preload("Assignees").Find(&task).Error; err != nil {
-		fmt.Println(err)
-	}
+func makePushNotif(task models.Task) {
 	last := task.Last
 	assignees := task.Assignees
 	len_assignees := len(assignees)

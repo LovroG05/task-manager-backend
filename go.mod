@@ -2,7 +2,17 @@ module github.com/lovrog05/task-manager-backend
 
 go 1.18
 
-require github.com/joho/godotenv v1.4.0
+require (
+	firebase.google.com/go v3.13.0+incompatible
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/gin-gonic/gin v1.8.1
+	github.com/go-co-op/gocron v1.14.0
+	github.com/joho/godotenv v1.4.0
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
+	google.golang.org/api v0.84.0
+	gorm.io/driver/postgres v1.3.7
+	gorm.io/gorm v1.23.4
+)
 
 require (
 	cloud.google.com/go v0.100.2 // indirect
@@ -10,11 +20,7 @@ require (
 	cloud.google.com/go/firestore v1.6.1 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
 	cloud.google.com/go/storage v1.22.1 // indirect
-	firebase.google.com/go v3.13.0+incompatible // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.8.1 // indirect
-	github.com/go-co-op/gocron v1.14.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
@@ -47,19 +53,15 @@ require (
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/sys v0.0.0-20220610221304-9f5ed59c137d // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
-	google.golang.org/api v0.84.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220608133413-ed9918b62aac // indirect
 	google.golang.org/grpc v1.47.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gorm.io/driver/postgres v1.3.7 // indirect
-	gorm.io/gorm v1.23.4 // indirect
 )

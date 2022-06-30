@@ -108,7 +108,7 @@ func Register(c *gin.Context) {
 
 	u := models.User{}
 
-	passwd, errr := bcrypt.GenerateFromPassword([]byte(models.preparePasswordInput(input.Password)), bcrypt.DefaultCost)
+	passwd, errr := bcrypt.GenerateFromPassword([]byte(models.PreparePasswordInput(input.Password)), bcrypt.DefaultCost)
 	if errr != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errr.Error()})
 		return

@@ -26,12 +26,13 @@ func FindTask(c *gin.Context) {
 }
 
 type TaskInput struct {
-	Title        string `json:"title" binding:"required"`
-	Description  string `json:"description" binding:"required"`
-	Daily        bool   `json:"daily" binding:"required"`
-	OnTime       string `json:"on_time" binding:"required"`
-	OnDay        string `json:"on_day"`
-	AssigneesIDs []uint `json:"assignees_ids"`
+	Title        string   `json:"title" binding:"required"`
+	Description  string   `json:"description" binding:"required"`
+	Daily        bool     `json:"daily" binding:"required"`
+	Time         string   `json:"time" binding:"required"`
+	Days         []string `json:"days" binding:"required"`
+	OneTime      bool     `json:"one_time" binding:"required"`
+	AssigneesIDs []uint   `json:"assignees_ids"`
 }
 
 func CreateTask(c *gin.Context) {
@@ -72,9 +73,9 @@ func CreateTask(c *gin.Context) {
 	newtask := models.Task{
 		Title:       task.Title,
 		Description: task.Description,
-		Daily:       task.Daily,
-		OnTime:      task.OnTime,
-		OnDay:       task.OnDay,
+		Time:        task.Time,
+		Days:        task.Days,
+		OneTime:     task.OneTime,
 		Assignees:   assignees,
 		Creator:     u,
 		Last:        0,
