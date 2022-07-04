@@ -3,6 +3,7 @@ package cron
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -16,11 +17,30 @@ import (
 func RegisterTaskCron(taskID uint) {
 	var task models.Task
 	if err := models.DB.Where("id = ?", taskID).Preload("Creator").Preload("Assignees").Find(&task).Error; err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	scheduler := gocron.NewScheduler(time.Local)
 
-	for _, day := range task.Days {
+	var days = []string{
+		"Monday",
+		"Tuesday",
+		"Wednesday",
+		"Thursday",
+		"Friday",
+		"Saturday",
+		"Sunday",
+	}
+
+	var result []string
+	for i := 0; i < len(days); i++ {
+		if task.Days&(1<<uint(i)) != 0 {
+			result = append(result, days[i])
+		}
+	}
+
+	log.Println("Setting CRON for task " + task.Title + " on days " + strings.Join(result, ", ") + " at " + task.Time)
+
+	for _, day := range result {
 		switch strings.ToLower(day) {
 		case "monday":
 			scheduler.Every(1).Monday().At(task.Time).Do(makePushNotif, task)
@@ -60,7 +80,7 @@ func sendPushNotif(title string, user models.User) {
 	opt := option.WithCredentialsFile("servicekey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -75,7 +95,7 @@ func sendPushNotif(title string, user models.User) {
 
 	client, err := app.Messaging(context.Background())
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err)
 		return
 	}
 
@@ -83,8 +103,7 @@ func sendPushNotif(title string, user models.User) {
 
 	response, err := client.Send(context.Background(), message)
 	if err != nil {
-		fmt.Println(err.Error())
-		fmt.Println(response)
+		log.Println(err, response)
 		return
 	}
 }

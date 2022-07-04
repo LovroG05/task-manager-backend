@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,13 +27,12 @@ func FindTask(c *gin.Context) {
 }
 
 type TaskInput struct {
-	Title        string   `json:"title" binding:"required"`
-	Description  string   `json:"description" binding:"required"`
-	Daily        bool     `json:"daily" binding:"required"`
-	Time         string   `json:"time" binding:"required"`
-	Days         []string `json:"days" binding:"required"`
-	OneTime      bool     `json:"one_time" binding:"required"`
-	AssigneesIDs []uint   `json:"assignees_ids"`
+	Title        string `json:"title" binding:"required"`
+	Description  string `json:"description" binding:"required"`
+	Time         string `json:"time" binding:"required"`
+	Days         uint8  `json:"days" binding:"required"`
+	OneTime      bool   `json:"one_time"`
+	AssigneesIDs []uint `json:"assignees_ids"`
 }
 
 func CreateTask(c *gin.Context) {
@@ -68,8 +68,6 @@ func CreateTask(c *gin.Context) {
 		}
 	}
 
-	fmt.Println("assignees: ", assignees)
-
 	newtask := models.Task{
 		Title:       task.Title,
 		Description: task.Description,
@@ -84,6 +82,7 @@ func CreateTask(c *gin.Context) {
 	err = models.DB.Create(&newtask).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Println(err.Error())
 		return
 	}
 

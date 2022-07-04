@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -12,9 +12,16 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("db.env")
+	file, err := os.OpenFile("logs.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Println("Error loading .env file: ", err)
+		log.Fatalln("Failed to open log file", err)
+	}
+	log.SetOutput(file)
+	log.Println("Starting server...")
+
+	err = godotenv.Load("db.env")
+	if err != nil {
+		log.Fatalln("Error loading .env file: ", err)
 	}
 
 	models.ConnectDatabase(os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_NAME"))

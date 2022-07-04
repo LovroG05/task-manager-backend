@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -12,7 +14,7 @@ func ConnectDatabase(host string, port string, user string, password string, dbn
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		panic("Failed to connect to database!")
+		log.Panic("Failed to connect to database: ", err)
 	}
 
 	database.AutoMigrate(&User{})

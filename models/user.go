@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"errors"
 	"html"
+	"log"
 	"strings"
 
 	"github.com/lovrog05/task-manager-backend/utils/token"
@@ -83,6 +84,7 @@ func (u *User) SaveUser() (*User, error) {
 	var err error = nil
 	err = DB.Create(&u).Error
 	if err != nil {
+		log.Println(err)
 		return &User{}, err
 	}
 	return u, nil
