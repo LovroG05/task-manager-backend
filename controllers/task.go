@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -24,6 +23,14 @@ func FindTask(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": tasks})
+}
+
+func findTask(id int) (*models.Task, error) {
+	var task models.Task
+	if err := models.DB.Where("id = ?", id).Preload("Creator").Preload("Assignees").First(&task).Error; err != nil {
+		return nil, err
+	}
+	return &task, nil
 }
 
 type TaskInput struct {
@@ -56,7 +63,6 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 	//TODO: check if time is valid
-	fmt.Println("assignees: ", task.AssigneesIDs)
 	var assignees []models.User
 	for id := range task.AssigneesIDs {
 		assignee, err := models.GetUserByID(task.AssigneesIDs[id])

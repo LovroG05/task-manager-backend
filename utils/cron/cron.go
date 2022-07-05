@@ -99,8 +99,6 @@ func sendPushNotif(title string, user models.User) {
 		return
 	}
 
-	time.Sleep(10 * time.Second) // sleep for 10 seconds
-
 	response, err := client.Send(context.Background(), message)
 	if err != nil {
 		log.Println(err, response)

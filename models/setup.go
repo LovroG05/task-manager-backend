@@ -19,6 +19,7 @@ func ConnectDatabase(host string, port string, user string, password string, dbn
 
 	database.AutoMigrate(&User{})
 	database.AutoMigrate(&Task{})
+	database.AutoMigrate(&TaskLog{})
 
 	DB = database
 }
