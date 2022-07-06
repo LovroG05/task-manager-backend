@@ -16,7 +16,7 @@ type User struct {
 	UserID   uint   `gorm:"primaryKey"`
 	Username string `gorm:"size:255;not null;unique" json:"username"`
 	Password string `gorm:"size:255;not null;" json:"-"`
-	FmcToken string `gorm:"size:255;not null;" json:"fmc_token"`
+	FmcToken string `gorm:"size:255;not null;" json:"-"`
 }
 
 func GetUserByID(uid uint) (User, error) {

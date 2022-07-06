@@ -35,6 +35,7 @@ func main() {
 	protected := r.Group("/api/admin")
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.GET("/user", controllers.CurrentUser)
+	protected.GET("/allusers", controllers.GetAllUsers)
 	protected.GET("/tasks", controllers.GetTasks)
 	protected.POST("/tasks", controllers.CreateTask)
 	protected.GET("/task/:id", controllers.FindTask)

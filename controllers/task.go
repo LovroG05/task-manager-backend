@@ -10,10 +10,48 @@ import (
 	"github.com/lovrog05/task-manager-backend/utils/token"
 )
 
+func taskAlreadyFound(alltasks []models.Task, task models.Task) bool {
+	for _, t := range alltasks {
+		if t.ID == task.ID {
+			return true
+		}
+	}
+	return false
+}
+
 func GetTasks(c *gin.Context) {
-	var tasks []models.Task
-	models.DB.Preload("Creator").Preload("Assignees").Find(&tasks)
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": tasks})
+	var creatortasks []models.Task
+	var alltasks []models.Task
+
+	user_id, err := token.ExtractTokenID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	u, err := models.GetUserByID(user_id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	models.DB.Where("creator_id = ?", u.UserID).Preload("Creator").Preload("Assignees").Find(&creatortasks)
+	allbelongingtasks := creatortasks
+
+	models.DB.Preload("Creator").Preload("Assignees").Find(&alltasks)
+	for _, task := range alltasks {
+		for _, assignee := range task.Assignees {
+			if assignee.UserID == u.UserID {
+				if !taskAlreadyFound(allbelongingtasks, task) {
+					allbelongingtasks = append(allbelongingtasks, task)
+				}
+			}
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": allbelongingtasks})
 }
 
 func FindTask(c *gin.Context) {
