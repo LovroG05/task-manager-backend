@@ -39,6 +39,7 @@ func main() {
 	protected.GET("/tasks", controllers.GetTasks)
 	protected.POST("/tasks", controllers.CreateTask)
 	protected.GET("/task/:id", controllers.FindTask)
+	protected.DELETE("/task/delete/:id", controllers.DeleteTask)
 	protected.PATCH("/user/updatefmc", controllers.UpdateFmcToken)
 	protected.POST("/task/log", controllers.LogTask)
 

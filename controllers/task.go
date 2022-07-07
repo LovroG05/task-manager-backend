@@ -133,3 +133,43 @@ func CreateTask(c *gin.Context) {
 	cron.RegisterTaskCron(newtask.ID)
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": newtask})
 }
+
+func DeleteTask(c *gin.Context) {
+
+	user_id, err := token.ExtractTokenID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	u, err := models.GetUserByID(user_id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var task models.Task
+	if err := models.DB.Where("id = ?", c.Param("id")).Preload("Creator").First(&task).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if task.Creator.UserID != u.UserID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not the creator of this task"})
+		return
+	}
+
+	// models.DB.Model(&u).Select("tasks").Where("tasks.id = ?", c.Param("id")).Association("Tasks").Clear()
+	// if err := ; err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	log.Println(err.Error())
+	// 	return
+	// }
+
+	models.DB.Exec("DELETE FROM user_tasks WHERE task_id = ?", task.ID)
+	models.DB.Delete(&task)
+
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
+}
