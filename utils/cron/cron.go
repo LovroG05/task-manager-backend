@@ -14,12 +14,17 @@ import (
 	"google.golang.org/api/option"
 )
 
+var scheduler *gocron.Scheduler = gocron.NewScheduler(time.Local)
+
+func StartScheduler() {
+	scheduler.StartAsync()
+}
+
 func RegisterTaskCron(taskID uint) {
 	var task models.Task
 	if err := models.DB.Where("id = ?", taskID).Preload("Creator").Preload("Assignees").Find(&task).Error; err != nil {
 		log.Println(err)
 	}
-	scheduler := gocron.NewScheduler(time.Local)
 
 	var days = []string{
 		"Monday",
@@ -64,19 +69,34 @@ func makePushNotif(task models.Task) {
 	last := task.Last
 	assignees := task.Assignees
 	len_assignees := len(assignees)
-	if len_assignees >= last+1 {
-		task.Last = last + 1
-		sendPushNotif(task.Title, assignees[task.Last])
-		models.DB.Save(&task)
+	fmt.Println("last: ", last)
+	fmt.Println("len: ", len_assignees)
+	for assignee := range assignees {
+		fmt.Println(assignees[assignee].Username)
+	}
+
+	if last == 0 {
+		if len_assignees > 1 {
+			task.Last = last + 1
+			sendPushNotif(task, assignees[task.Last])
+			models.DB.Save(&task)
+		} else {
+			sendPushNotif(task, assignees[task.Last])
+		}
 	} else {
-		task.Last = 0
-		sendPushNotif(task.Title, assignees[task.Last])
-		models.DB.Save(&task)
+		if len_assignees >= last+1 {
+			task.Last = last + 1
+			sendPushNotif(task, assignees[task.Last])
+			models.DB.Save(&task)
+		} else {
+			task.Last = 0
+			sendPushNotif(task, assignees[task.Last])
+			models.DB.Save(&task)
+		}
 	}
 }
 
-func sendPushNotif(title string, user models.User) {
-	fmt.Println("Task " + title + " must be performed by " + user.Username + " right now")
+func sendPushNotif(task models.Task, user models.User) {
 	opt := option.WithCredentialsFile("servicekey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -87,10 +107,9 @@ func sendPushNotif(title string, user models.User) {
 	message := &messaging.Message{
 		Token: user.FmcToken,
 		Notification: &messaging.Notification{
-			Title: "Task: " + title,
-			Body:  "do your task now",
+			Title: "Task: " + task.Title,
+			Body:  task.Description,
 		},
-		Data: map[string]string{"title": title, "body": "do your task now"},
 	}
 
 	client, err := app.Messaging(context.Background())

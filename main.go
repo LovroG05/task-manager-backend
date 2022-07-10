@@ -9,6 +9,7 @@ import (
 	"github.com/lovrog05/task-manager-backend/controllers"
 	"github.com/lovrog05/task-manager-backend/middlewares"
 	"github.com/lovrog05/task-manager-backend/models"
+	"github.com/lovrog05/task-manager-backend/utils/cron"
 )
 
 func main() {
@@ -43,5 +44,6 @@ func main() {
 	protected.PATCH("/user/updatefmc", controllers.UpdateFmcToken)
 	protected.POST("/task/log", controllers.LogTask)
 
+	cron.StartScheduler()
 	r.Run()
 }
