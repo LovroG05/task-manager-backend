@@ -43,8 +43,6 @@ func RegisterTaskCron(taskID uint) {
 		}
 	}
 
-	log.Println("Setting CRON for task " + task.Title + " on days " + strings.Join(result, ", ") + " at " + task.Time)
-
 	for _, day := range result {
 		switch strings.ToLower(day) {
 		case "monday":

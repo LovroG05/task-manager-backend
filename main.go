@@ -43,6 +43,8 @@ func main() {
 	protected.DELETE("/task/delete/:id", controllers.DeleteTask)
 	protected.PATCH("/user/updatefmc", controllers.UpdateFmcToken)
 	protected.POST("/task/log", controllers.LogTask)
+	protected.GET("/task/logs/:id", controllers.GetTaskLogsByTask)
+	protected.GET("/task/logs", controllers.GetTaskLogsByUser)
 
 	cron.StartScheduler()
 	r.Run()

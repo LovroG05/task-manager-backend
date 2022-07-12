@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lovrog05/task-manager-backend/models"
+	"github.com/lovrog05/task-manager-backend/models/inputs"
 	"github.com/lovrog05/task-manager-backend/utils/token"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,14 +30,9 @@ func CurrentUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": u})
 }
 
-type LoginInput struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
 func Login(c *gin.Context) {
 
-	var input LoginInput
+	var input inputs.LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -58,12 +54,8 @@ func Login(c *gin.Context) {
 
 }
 
-type FmcTokenInput struct {
-	Token string `json:"token" binding:"required"`
-}
-
 func UpdateFmcToken(c *gin.Context) {
-	var input FmcTokenInput
+	var input inputs.FmcTokenInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -93,14 +85,9 @@ func UpdateFmcToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
-type RegisterInput struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
 func Register(c *gin.Context) {
 
-	var input RegisterInput
+	var input inputs.RegisterInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

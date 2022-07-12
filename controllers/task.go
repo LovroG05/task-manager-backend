@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lovrog05/task-manager-backend/models"
+	"github.com/lovrog05/task-manager-backend/models/inputs"
 	"github.com/lovrog05/task-manager-backend/utils/cron"
 	"github.com/lovrog05/task-manager-backend/utils/token"
 )
@@ -71,17 +72,8 @@ func findTask(id int) (*models.Task, error) {
 	return &task, nil
 }
 
-type TaskInput struct {
-	Title        string `json:"title" binding:"required"`
-	Description  string `json:"description" binding:"required"`
-	Time         string `json:"time" binding:"required"`
-	Days         uint8  `json:"days" binding:"required"`
-	OneTime      bool   `json:"one_time"`
-	AssigneesIDs []uint `json:"assignees_ids"`
-}
-
 func CreateTask(c *gin.Context) {
-	var task TaskInput
+	var task inputs.TaskInput
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
